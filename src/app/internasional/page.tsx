@@ -7,14 +7,14 @@ interface Props {
   }>;
 }
 
-export default async function TerbaruPage({
+export default async function InternasionalPage({
   searchParams,
 }: Props) {
   const { page } = await searchParams;
 
   const currentPage = Number(page) || 1;
 
-  const response = await NewsAPI.latest();
+  const response = await NewsAPI.category("internasional");
 
   const ITEMS_PER_PAGE = 8;
 
@@ -25,13 +25,13 @@ export default async function TerbaruPage({
 
   return (
     <CategoryLayout
-      title="Terbaru"
-      description="Berita terbaru hari ini."
+      title="Internasional"
+      description="Berita internasional terbaru dari berbagai negara."
       news={paginatedNews}
       currentPage={currentPage}
       totalItems={response.data.length}
       itemsPerPage={ITEMS_PER_PAGE}
-      basePath="/terbaru"
+      basePath="/internasional"
     />
   );
 }
