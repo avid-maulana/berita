@@ -47,6 +47,17 @@ export default function Navbar() {
     };
   }, [menuOpen]);
 
+  // Fungsi universal: Jika menu yang diklik sama dengan halaman aktif saat ini, scroll ke atas.
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (pathname === href) {
+      e.preventDefault(); // Cegah re-render/navigasi ulang
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth", // Efek scroll halus
+      });
+    }
+  };
+
   return (
     <>
       {/* PERBAIKAN: Menambahkan 'border-b' default di header dan mengontrol warnanya 
@@ -65,6 +76,7 @@ export default function Navbar() {
             {/* Logo — collapses out of view on mobile while search is active */}
             <Link
               href="/"
+              onClick={(e) => handleNavClick(e, "/")}
               aria-hidden={mobileSearchActive}
               tabIndex={mobileSearchActive ? -1 : undefined}
               className={`shrink-0 overflow-hidden transition-all duration-300 ease-out xl:!max-w-none xl:!opacity-100 xl:!scale-100 ${
@@ -95,6 +107,7 @@ export default function Navbar() {
                   <Link
                     key={item.href}
                     href={item.href}
+                    onClick={(e) => handleNavClick(e, item.href)} // <--- Berlaku untuk semua halaman
                     className={`relative pb-1 text-[15px] font-medium transition ${
                       active
                         ? scrolled
@@ -185,6 +198,7 @@ export default function Navbar() {
                   <Link
                     key={item.href}
                     href={item.href}
+                    onClick={(e) => handleNavClick(e, item.href)} // <--- Berlaku untuk semua halaman
                     style={{
                       transitionDelay: menuOpen ? `${index * 40}ms` : "0ms",
                     }}
