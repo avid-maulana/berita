@@ -132,3 +132,9 @@ export default async function DetailPage({ params }: Props) {
   </>
 );
 }
+
+// Tambahkan kode ini di baris paling bawah file page Anda
+export async function generateStaticParams() {
+  // Memberikan 1 data tiruan agar proses build Next.js berhasil lolos
+  return [{ slug: 'contoh-berita' }];
+}
