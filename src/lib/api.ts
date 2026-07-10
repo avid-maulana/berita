@@ -1,70 +1,13 @@
 import { NewsItem, NewsResponse } from "@/types/news";
 
-const BASE_URL = "https://berita-indo-api-next.vercel.app/api";
-
-export const SOURCES = {
-  cnn: "cnn-news",
-  cnbc: "cnbc-news",
-} as const;
-
-export type NewsSource = keyof typeof SOURCES;
-
-export const CATEGORY_MAP = {
-  terbaru: {
-    cnn: "",
-    cnbc: "",
-  },
-
-  nasional: {
-    cnn: "nasional",
-    cnbc: "news",
-  },
-
-  internasional: {
-    cnn: "internasional",
-    cnbc: "news",
-  },
-
-  ekonomi: {
-    cnn: "ekonomi",
-    cnbc: "market",
-  },
-
-  olahraga: {
-    cnn: "olahraga",
-    cnbc: "news",
-  },
-
-  teknologi: {
-    cnn: "teknologi",
-    cnbc: "tech",
-  },
-
-  hiburan: {
-    cnn: "hiburan",
-    cnbc: "lifestyle",
-  },
-
-  "gaya-hidup": {
-    cnn: "gaya-hidup",
-    cnbc: "lifestyle",
-  },
-} as const;
-
-type Category = keyof typeof CATEGORY_MAP;
+const BASE_URL =
+  "https://berita-indo-api-next.vercel.app/api/cnn-news";
 
 async function fetchNews(
-  category: Category = "terbaru",
-  source: NewsSource = "cnn"
+  endpoint = "",
+  category?: string
 ): Promise<NewsResponse> {
-  const endpoint = SOURCES[source];
-  const apiCategory = CATEGORY_MAP[category][source];
-
-  const url = apiCategory
-    ? `${BASE_URL}/${endpoint}/${apiCategory}`
-    : `${BASE_URL}/${endpoint}`;
-
-  const response = await fetch(url, {
+  const response = await fetch(`${BASE_URL}${endpoint}`, {
     cache: "no-store",
   });
 
@@ -78,39 +21,33 @@ async function fetchNews(
     ...data,
     data: data.data.map((item) => ({
       ...item,
-      category:
-        category === "terbaru"
-          ? "Terbaru"
-          : category.charAt(0).toUpperCase() + category.slice(1),
+      category: category ?? "Terbaru",
     })),
   };
 }
 
-const categories: Category[] = [
+const categories = [
   "terbaru",
   "nasional",
   "internasional",
-  "ekonomi",
-  "olahraga",
-  "teknologi",
   "hiburan",
   "gaya-hidup",
-];
+  "olahraga",
+] as const;
 
 export const NewsAPI = {
-  latest: (source: NewsSource = "cnn") =>
-    fetchNews("terbaru", source),
+  latest: () => fetchNews("", "Terbaru"),
 
-  category: (
-    category: Category,
-    source: NewsSource = "cnn"
-  ) => fetchNews(category, source),
+  category: (category: string) =>
+    fetchNews(`/${category}`, category),
 
-  all: async (
-    source: NewsSource = "cnn"
-  ): Promise<NewsItem[]> => {
+  all: async (): Promise<NewsItem[]> => {
     const responses = await Promise.all(
-      categories.map((category) => fetchNews(category, source))
+      categories.map((category) =>
+        category === "terbaru"
+          ? fetchNews("", "Terbaru")
+          : fetchNews(`/${category}`, category)
+      )
     );
 
     return responses.flatMap((item) => item.data);
